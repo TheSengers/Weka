@@ -153,6 +153,9 @@ public class GUIChooser extends JFrame {
   /** The frame containing the explorer interface */
   protected JFrame m_ExplorerFrame;
 
+  /** Click to open the Comparitizer */
+  protected JButton m_ComparBut = new JButton("Comparitizer");
+  
   /** Click to open the Explorer */
   protected JButton m_ExperimenterBut = new JButton("Experimenter");
 
@@ -308,8 +311,9 @@ public class GUIChooser extends JFrame {
     // applications
     m_PanelApplications.setBorder(BorderFactory
       .createTitledBorder("Applications"));
-    m_PanelApplications.setLayout(new GridLayout(4, 1));
+    m_PanelApplications.setLayout(new GridLayout(5, 1));
     m_PanelApplications.add(m_ExplorerBut);
+    m_PanelApplications.add(m_ComparBut);
     m_PanelApplications.add(m_ExperimenterBut);
     m_PanelApplications.add(m_KnowledgeFlowBut);
     m_PanelApplications.add(m_SimpleBut);
@@ -1101,6 +1105,15 @@ public class GUIChooser extends JFrame {
       }
     });
 
+    m_ComparBut.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        	System.out.println("yolo");
+        	showComparitizer();
+          }
+        });
+
+    
     m_ExperimenterBut.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -1127,6 +1140,7 @@ public class GUIChooser extends JFrame {
       }
     });
 
+    
     KnowledgeFlowApp.addStartupListener(new weka.gui.beans.StartUpListener() {
       @Override
       public void startUpComplete() {
@@ -1263,7 +1277,18 @@ public class GUIChooser extends JFrame {
       }
     }
   }
-
+  
+  public void showComparitizer() {
+	  System.out.println("Comparitizor!!!!");
+	    /*if (m_ComparFrame == null) {
+	      KnowledgeFlow.startApp();
+	      m_pendingKnowledgeFlowLoad = fileToLoad;
+	    } else {
+	      if (fileToLoad != null) {
+	        KnowledgeFlowApp.getSingleton().loadLayout(new File(fileToLoad), true);
+	      }
+	    }*/
+	  }
   public void showExplorer(String fileToLoad) {
     Explorer expl = null;
     if (m_ExplorerFrame == null) {

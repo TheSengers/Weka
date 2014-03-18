@@ -64,6 +64,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 
 import weka.classifiers.bayes.net.GUI;
 import weka.classifiers.evaluation.ThresholdCurve;
@@ -155,6 +156,9 @@ public class GUIChooser extends JFrame {
 
   /** Click to open the Comparitizer */
   protected JButton m_ComparBut = new JButton("Comparitizer");
+  
+  /** The frame containing the comparitizer interface */
+  protected JFrame m_ComparFrame;
   
   /** Click to open the Explorer */
   protected JButton m_ExperimenterBut = new JButton("Experimenter");
@@ -1280,14 +1284,27 @@ public class GUIChooser extends JFrame {
   
   public void showComparitizer() {
 	  System.out.println("Comparitizor!!!!");
-	    /*if (m_ComparFrame == null) {
-	      KnowledgeFlow.startApp();
-	      m_pendingKnowledgeFlowLoad = fileToLoad;
-	    } else {
-	      if (fileToLoad != null) {
-	        KnowledgeFlowApp.getSingleton().loadLayout(new File(fileToLoad), true);
-	      }
-	    }*/
+	    if (m_ComparFrame == null) {
+	    	m_ComparBut.setEnabled(false);
+	    	m_ComparFrame = new JFrame("Weka Comparitizer");
+	    	m_ComparFrame.setIconImage(m_Icon);
+	    	m_ComparFrame.getContentPane().setLayout(new BorderLayout());
+	    	m_ComparFrame.addWindowListener(new WindowAdapter() {
+	            @Override
+	            public void windowClosing(WindowEvent w) {
+	            	m_ComparFrame.dispose();
+	            	m_ComparFrame = null;
+	            	m_ComparBut.setEnabled(true);
+	              checkExit();
+	            }
+	    	});
+	    	JLabel textLabel = new JLabel("I'm a label in the window",SwingConstants.CENTER);
+	    	textLabel.setPreferredSize(new Dimension(300, 100));
+	    	m_ComparFrame.getContentPane().add(textLabel, BorderLayout.CENTER);
+	    	m_ComparFrame.setLocationRelativeTo(null);
+	    	m_ComparFrame.pack();
+	    	m_ComparFrame.setVisible(true);
+	    } 
 	  }
   public void showExplorer(String fileToLoad) {
     Explorer expl = null;
@@ -1555,6 +1572,7 @@ public class GUIChooser extends JFrame {
       && (m_ExperimenterFrame == null)
       && (m_KnowledgeFlowFrame == null)
       && (m_SimpleCLI == null)
+      && (m_ComparFrame == null)
       // tools
       && (m_ArffViewers.size() == 0) && (m_SqlViewerFrame == null)
       && (m_GroovyConsoleFrame == null)

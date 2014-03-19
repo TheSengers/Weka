@@ -1303,6 +1303,7 @@ public class GUIChooser extends JFrame {
 	    	m_ComparFrame.getContentPane().add(textLabel, BorderLayout.CENTER);
 	    	m_ComparFrame.setLocationRelativeTo(null);
 	    	m_ComparFrame.pack();
+	    	m_ComparFrame.setSize(800,600);
 	    	m_ComparFrame.setVisible(true);
 	    } 
 	  }

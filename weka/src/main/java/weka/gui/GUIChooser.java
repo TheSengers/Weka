@@ -81,6 +81,7 @@ import weka.gui.arffviewer.ArffViewer;
 import weka.gui.beans.KnowledgeFlow;
 import weka.gui.beans.KnowledgeFlowApp;
 import weka.gui.boundaryvisualizer.BoundaryVisualizer;
+import weka.gui.comparitizer.Comparitizer;
 import weka.gui.experiment.Experimenter;
 import weka.gui.explorer.Explorer;
 import weka.gui.graphvisualizer.GraphVisualizer;
@@ -1283,12 +1284,16 @@ public class GUIChooser extends JFrame {
   }
   
   public void showComparitizer() {
+	  Comparitizer comp = null;
 	  System.out.println("Comparitizor!!!!");
 	    if (m_ComparFrame == null) {
 	    	m_ComparBut.setEnabled(false);
 	    	m_ComparFrame = new JFrame("Weka Comparitizer");
 	    	m_ComparFrame.setIconImage(m_Icon);
 	    	m_ComparFrame.getContentPane().setLayout(new BorderLayout());
+	    	comp = new Comparitizer();
+
+	    	m_ComparFrame.getContentPane().add(comp, BorderLayout.CENTER);
 	    	m_ComparFrame.addWindowListener(new WindowAdapter() {
 	            @Override
 	            public void windowClosing(WindowEvent w) {
@@ -1298,9 +1303,9 @@ public class GUIChooser extends JFrame {
 	              checkExit();
 	            }
 	    	});
-	    	JLabel textLabel = new JLabel("I'm a label in the window",SwingConstants.CENTER);
-	    	textLabel.setPreferredSize(new Dimension(300, 100));
-	    	m_ComparFrame.getContentPane().add(textLabel, BorderLayout.CENTER);
+	    	//JLabel textLabel = new JLabel("I'm a label in the window",SwingConstants.CENTER);
+	    	//textLabel.setPreferredSize(new Dimension(300, 100));
+	    	//m_ComparFrame.getContentPane().add(textLabel, BorderLayout.CENTER);
 	    	m_ComparFrame.setLocationRelativeTo(null);
 	    	m_ComparFrame.pack();
 	    	m_ComparFrame.setSize(800,600);

@@ -2,48 +2,91 @@ package weka.gui.comparitizer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.SwingConstants;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 
 public class Comparitizer extends JPanel {
 
+	/*
+	 * Gui Elements for Comparitizer 
+	 */
+	protected JPanel comparitizFrame;
+	protected JTabbedPane comparType;
+	protected JPanel comparContent;
+	protected JTextArea comparContLeft;
+	protected JTextArea comparContRight;
+	protected JMenuBar menuBar;
+	protected JMenu menuFile;
+	protected JMenuItem menuLoad;
 	/**
 	 * Create the panel.
 	 */
 	public Comparitizer() {
 		setLayout(new GridLayout(1, 2, 0, 0));
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		add(tabbedPane);
+		comparitizFrame = new JPanel();
+		add(comparitizFrame);
+		comparitizFrame.setLayout(new BorderLayout(0, 0));
 		
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Clustering", null, panel, null);
-		panel.setLayout(new GridLayout(0, 2, 10, 0));
+		comparType = new JTabbedPane(JTabbedPane.TOP);
+		comparitizFrame.add(comparType);
 		
-		JTextArea txtrThisIsAnother = new JTextArea();
-		panel.add(txtrThisIsAnother);
-		txtrThisIsAnother.setLineWrap(true);
-		txtrThisIsAnother.setText("This is another test yolo");
+		comparContent = new JPanel();
+		comparType.addTab("Clustering", null, comparContent, null);
+		comparContent.setLayout(new GridLayout(0, 2, 10, 0));
 		
-		JTextArea txtrThisIsA = new JTextArea();
-		panel.add(txtrThisIsA);
-		txtrThisIsA.setLineWrap(true);
-		txtrThisIsA.setText("this is a test yolo");
+		comparContLeft = new JTextArea();
+		comparContent.add(comparContLeft);
+		comparContLeft.setLineWrap(true);
+		comparContLeft.setText("This is another test yolo");
+		
+		comparContRight = new JTextArea();
+		comparContent.add(comparContRight);
+		comparContRight.setLineWrap(true);
+		comparContRight.setText("this is a test yolo");
 		
 		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Others", null, panel_1, null);
+		comparType.addTab("Others", null, panel_1, null);
+		
+		set_up_menubar();
 
 	}
-	
+	protected void set_up_menubar(){
+		if(comparitizFrame != null){
+			menuBar = new JMenuBar();
+			comparitizFrame.add(menuBar, BorderLayout.NORTH);
+			
+			menuFile = new JMenu("File");
+			menuBar.add(menuFile);
+			
+			menuLoad = new JMenuItem("Load");
+			menuFile.add(menuLoad);
+			menuLoad.addActionListener(new ActionListener() {
+		        @Override
+		        public void actionPerformed(ActionEvent e) {
+		            JFileChooser chooser = new JFileChooser();
+		            //change this based on what we are loading
+		            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+		                "JPG & GIF Images", "jpg", "gif");
+		            
+		            chooser.setFileFilter(filter);
+		            int returnVal = chooser.showOpenDialog(getParent());
+		            if(returnVal == JFileChooser.APPROVE_OPTION) {
+		               System.out.println("You chose to open this file: " +
+		                    chooser.getSelectedFile().getName());
+		            }
+		          }
+		        });
+		}
+	}
 	public static void main(String[] args) {
 		JFrame m_ComparFrame = new JFrame("Comparitizer test");
 		  System.out.println("Comparitizor!!!!");

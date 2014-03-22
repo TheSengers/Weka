@@ -279,6 +279,22 @@ public class SimpleKMeans extends RandomizableClusterer implements
   /** For parallel execution mode */
   protected transient ExecutorService m_executorPool;
 
+  /**************************************************************************/
+  
+  /** Cluster homogeneity using Euclidean distance */
+  protected double[] clusterHomogeneityUsingEuclidean;
+  
+  /** Cluster homogeneity using Manhattan distance */
+  protected double[] clusterHomogeneityUsingManhattan;
+  
+  /** Cluster homogeneity with respect to centroid using Euclidean distance */
+  protected double[] clusterHomogeneityWithRespectToCentroidUsingEuclidean;
+  
+  /** Cluster homogeneity with respect to centroid using Manhattan distance */
+  protected double[] clusterHomogeneityWithRespectToCentroidUsingManhattan;
+  
+  /**************************************************************************/
+  
   /**
    * the default constructor.
    */
@@ -670,7 +686,7 @@ public class SimpleKMeans extends RandomizableClusterer implements
       } else {
         converged = launchAssignToClusters(instances, clusterAssignments);
       }
-
+      
       // update centroids
       m_ClusterCentroids = new Instances(instances, m_NumClusters);
       for (i = 0; i < m_NumClusters; i++) {
@@ -723,7 +739,18 @@ public class SimpleKMeans extends RandomizableClusterer implements
           .numAttributes()][0];
       }
     }
+    
+    
+    /********************************************/
+   
 
+    calculateClusterHomogeneity(m_NumClusters, clusterAssignments, instances);
+    calculateClusterHomogeneityWithRespectToCentroid(m_NumClusters, clusterAssignments, instances, m_ClusterCentroids);
+    
+    
+    /********************************************/
+   
+    
     // calculate errors
     if (!m_FastDistanceCalc) {
       for (i = 0; i < instances.numInstances(); i++) {
@@ -752,7 +779,103 @@ public class SimpleKMeans extends RandomizableClusterer implements
 
     m_executorPool.shutdown();
   }
-
+  
+  /**
+   * Calculates homogeneity of each cluster.
+   * 
+   * @param numOfClusters the total number of clusters.
+   * 
+   * @param clusterAssign the array specifying which cluster each instance belongs to.
+   * 
+   * @param data all the instances.
+   * 
+   * 
+   */
+  private void calculateClusterHomogeneity(int numOfClusters, int[] clusterAssign, Instances data)
+  {  
+	  clusterHomogeneityUsingEuclidean = new double[numOfClusters];
+	  clusterHomogeneityUsingManhattan = new double[numOfClusters];
+	  
+	  for(int i = 0; i < numOfClusters; i++)
+	  {
+		  ArrayList<Instance> instanceFromCluster = getAllInstancesFromAssignedCluster(i , clusterAssign, data);
+		  double homoEuclidean = ClusterHomogeneity.calculateHomogeneityUsingEuclidean(instanceFromCluster);
+		  double homoManhattan = ClusterHomogeneity.calculateHomogeneityUsingManhattan(instanceFromCluster);
+		  
+		  //round the results to 4 decimal points.
+		  homoEuclidean = Math.round(homoEuclidean * 10000);
+		  homoEuclidean = homoEuclidean / 10000;
+		  
+		  homoManhattan = Math.round(homoManhattan * 10000);
+		  homoManhattan = homoManhattan / 10000;
+		  
+		  clusterHomogeneityUsingEuclidean[i] = homoEuclidean;
+		  clusterHomogeneityUsingManhattan[i] = homoManhattan;		 
+	  }  
+  }
+  
+  /**
+   * Calculates homogeneity with respect to the centroid of each cluster and stored
+   * results in global variables.
+   * 
+   * @param numOfClusters the total number of clusters.
+   * 
+   * @param clusterAssign the array specifying which cluster each instance belongs to.
+   * 
+   * @param data all the instances.
+   * 
+   * @param centroids the centroids of each cluster.
+   * 
+   */
+  private void calculateClusterHomogeneityWithRespectToCentroid(int numOfClusters, int[] clusterAssign, Instances data, Instances centroids)
+  {  
+	  clusterHomogeneityWithRespectToCentroidUsingEuclidean =  new double[numOfClusters];
+	  clusterHomogeneityWithRespectToCentroidUsingManhattan = new double[numOfClusters];
+	  
+	  for(int i = 0; i < numOfClusters; i++)
+	  {
+		  ArrayList<Instance> instanceFromCluster = getAllInstancesFromAssignedCluster(i , clusterAssign, data);
+		  double homoEuclidean = ClusterHomogeneity.calculateHomogeneityWithRespectToCentroidUsingEuclidean(instanceFromCluster , centroids.get(i));
+		  double homoManhattan = ClusterHomogeneity.calculateHomogeneityWithRespectToCentroidUsingManhattan(instanceFromCluster , centroids.get(i));
+		  
+		//round the results to 4 decimal points.
+		  homoEuclidean = Math.round(homoEuclidean * 10000);
+		  homoEuclidean = homoEuclidean / 10000;
+		  
+		  homoManhattan = Math.round(homoManhattan * 10000);
+		  homoManhattan = homoManhattan / 10000;
+		  
+		  clusterHomogeneityWithRespectToCentroidUsingEuclidean[i] = homoEuclidean;
+		  clusterHomogeneityWithRespectToCentroidUsingManhattan[i] = homoManhattan;
+	  }  
+  }
+  
+  
+  /**
+   * Gets a list of all instances belonging to the specified cluster.
+   * 
+   * @param clusterIndex the cluster number that we want to get all the instances from.
+   * 
+   * @param clusterAssign the array specifying which cluster each instance belongs to.
+   * 
+   * @param data all the instances.
+   * 
+   * @return ArrayList of all the instance belonging to cluster of clusterIndex.
+   */
+  private ArrayList<Instance> getAllInstancesFromAssignedCluster(int clusterIndex, int[] clusterAssign, Instances data)
+  {
+	  ArrayList<Instance> outList = new ArrayList<Instance>();
+	  
+	  for(int i =0; i < clusterAssign.length ; i++ )
+	  {
+		  if(clusterAssign[i] == clusterIndex)
+			  outList.add(data.instance(i));
+	  }
+	  
+	  return outList;
+  }
+  
+  
   /**
    * Initialize with the canopy centers of the Canopy clustering method
    * 
@@ -2000,8 +2123,63 @@ public class SimpleKMeans extends RandomizableClusterer implements
         }
       }
     }
+    
+    /********************** Output Homogeneity data **********************/
+    temp.append("\n");
+    temp.append("Cluster homogeneity:\n\n");
+    temp.append("Cluster#\tEuclidean Distance\tManahattan Distance\n");
+    temp.append("===========================================================\n");
+    
+    double EuclideanTotal = 0;
+    double ManhattanTotal = 0;
+    
+    for(int i = 0; i < m_NumClusters ; i++){
+    	EuclideanTotal += clusterHomogeneityUsingEuclidean[i];
+    	ManhattanTotal += clusterHomogeneityUsingManhattan[i];
+    	temp.append(i + " (" + m_ClusterSizes[i] + ")\t\t" + clusterHomogeneityUsingEuclidean[i] + "\t\t\t" + clusterHomogeneityUsingManhattan[i] +"\n");
+    }
+    
+    double EuclideanAverage = EuclideanTotal/m_NumClusters;
+    double ManhattanAverage = ManhattanTotal/m_NumClusters;
+    
+    //round to 4 decimal places
+    EuclideanAverage = Math.round(EuclideanAverage * 10000);
+    EuclideanAverage = EuclideanAverage / 10000;
+    ManhattanAverage = Math.round(ManhattanAverage * 10000);
+    ManhattanAverage = ManhattanAverage / 10000;
+    
+    temp.append("Average\t\t" + EuclideanAverage + "\t\t\t" + ManhattanAverage + "\n");    
+    
+    
+    temp.append("\n");
+    temp.append("Cluster homogeneity with respect to the centroid:\n\n");
+    temp.append("Cluster#\tEuclidean Distance\tManahattan Distance\n");
+    temp.append("===========================================================\n");
 
-    temp.append("\n\n");
+    EuclideanTotal = 0;
+    ManhattanTotal = 0;
+    
+    for(int i = 0; i < m_NumClusters ; i++)
+    {
+    	EuclideanTotal += clusterHomogeneityWithRespectToCentroidUsingEuclidean[i];
+    	ManhattanTotal += clusterHomogeneityWithRespectToCentroidUsingManhattan[i];
+    	
+    	temp.append(i + " (" + m_ClusterSizes[i] + ")\t\t" + clusterHomogeneityWithRespectToCentroidUsingEuclidean[i] + "\t\t\t" + clusterHomogeneityWithRespectToCentroidUsingManhattan[i] +"\n");    
+    }
+    
+    EuclideanAverage = EuclideanTotal/m_NumClusters;
+    ManhattanAverage = ManhattanTotal/m_NumClusters;
+    
+    //round to 4 decimal places
+    EuclideanAverage = Math.round(EuclideanAverage * 10000);
+    EuclideanAverage = EuclideanAverage / 10000;
+    ManhattanAverage = Math.round(ManhattanAverage * 10000);
+    ManhattanAverage = ManhattanAverage / 10000;
+    
+    temp.append("Average\t\t" + EuclideanAverage + "\t\t\t" + ManhattanAverage + "\n"); 
+    /********************** Output Homogeneity data **********************/
+
+    temp.append("\n");
     return temp.toString();
   }
 

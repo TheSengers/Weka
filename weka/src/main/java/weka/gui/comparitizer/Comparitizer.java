@@ -16,6 +16,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 
 import weka.clusterers.Clusterer;
 import weka.core.Drawable;
@@ -36,8 +37,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
+
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
+
+import java.awt.Component;
 
 public class Comparitizer extends JPanel {
 
@@ -61,13 +65,14 @@ public class Comparitizer extends JPanel {
 	   System.getProperty("user.dir")));
 	 /** The destination for log/status messages */
 	 protected Logger m_Log = new SysErrLog();
-	 private JPanel panel;
+	 private JPanel m_RightPanel;
+	 private JTextArea m_FileInfo;
+	 private JPanel m_LeftPanel;
+	 private JPanel m_FileInfoPanel;
 	/**
 	 * Create the panel.
 	 */
 	public Comparitizer() {
-	    m_History.setBorder(BorderFactory
-	    	      .createTitledBorder("Result list (right-click for options)"));
 		setLayout(new GridLayout(1, 2, 0, 0));
 		
 		comparitizFrame = new JPanel();
@@ -80,12 +85,10 @@ public class Comparitizer extends JPanel {
 		comparContent = new JPanel();
 		comparType.addTab("Clustering", null, comparContent, null);
 		comparContent.setLayout(new BorderLayout());
-		
-		comparContent.add(m_History, BorderLayout.WEST);	
 	    
-	    panel = new JPanel();
-	    panel.setBorder(new TitledBorder(null, "Preview Pane", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	    comparContent.add(panel, BorderLayout.CENTER);
+	    m_RightPanel = new JPanel();
+	    m_RightPanel.setBorder(new TitledBorder(null, "Preview Pane", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	    comparContent.add(m_RightPanel, BorderLayout.CENTER);
 	    // Connect / configure the components
 	    m_OutText.setEditable(false);
 	    m_OutText.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -98,11 +101,39 @@ public class Comparitizer extends JPanel {
 	        }
 	      }
 	    });
-	    panel.setLayout(new BorderLayout(0, 0));
+	    m_RightPanel.setLayout(new BorderLayout(0, 0));
 	    //comparContLeft = new JTextArea();
 	    final JScrollPane js = new JScrollPane(m_OutText);
-	    panel.add(js);
+	    m_RightPanel.add(js);
 	    js.setBorder(null);
+	    
+	    //creates the left panel for file info and data select
+	    m_LeftPanel = new JPanel();
+	    comparContent.add(m_LeftPanel, BorderLayout.WEST);
+	    m_LeftPanel.setLayout(new GridLayout(0, 1, 0, 0));
+	    
+	    //creates the view for the file info
+	    m_FileInfoPanel = new JPanel();
+	    m_LeftPanel.add(m_FileInfoPanel);
+	    m_FileInfoPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "File Info", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	    m_FileInfoPanel.setLayout(new GridLayout(0, 1, 0, 0));
+	    m_FileInfo = new JTextArea();
+	    m_FileInfo.setEditable(false);
+	    m_FileInfo.setFont(new Font("Monospaced", Font.PLAIN, 12));
+	    final JScrollPane fileinfo_scroll = new JScrollPane(m_FileInfo);
+	    fileinfo_scroll.setPreferredSize(m_FileInfo.getPreferredSize());
+	    m_FileInfoPanel.add(fileinfo_scroll);
+	    fileinfo_scroll.setBorder(null);
+	    
+	    //sets the caret so that the scroll bar always starts at the top
+	    DefaultCaret caret = (DefaultCaret)m_FileInfo.getCaret();
+	    caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+
+
+	    //adds the history 
+	    m_LeftPanel.add(m_History);
+	    m_History.setBorder(BorderFactory
+	    	      .createTitledBorder("Result list (right-click for options)"));
 	    js.getViewport().addChangeListener(new ChangeListener() {
 	      private int lastHeight;
 
@@ -262,6 +293,9 @@ public class Comparitizer extends JPanel {
 	         outBuff.append("\nTraining data unknown\n");
 	       }
 
+		    //displays the file info in the test label as well
+	       m_FileInfo.setText(outBuff.toString());
+	       
 	       outBuff.append("\n=== Clustering model ===\n\n");
 	       outBuff.append(clusterer.toString() + "\n");
 

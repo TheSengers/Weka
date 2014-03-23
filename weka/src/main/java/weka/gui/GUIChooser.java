@@ -1303,10 +1303,9 @@ public class GUIChooser extends JFrame {
 	              checkExit();
 	            }
 	    	});
-	    	//JLabel textLabel = new JLabel("I'm a label in the window",SwingConstants.CENTER);
-	    	//textLabel.setPreferredSize(new Dimension(300, 100));
-	    	//m_ComparFrame.getContentPane().add(textLabel, BorderLayout.CENTER);
-	    	m_ComparFrame.setLocationRelativeTo(null);
+	    	
+	    	//changes where the frame spawns
+	    	//m_ComparFrame.setLocationRelativeTo(null);
 	    	m_ComparFrame.pack();
 	    	m_ComparFrame.setSize(800,600);
 	    	m_ComparFrame.setVisible(true);

@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -69,6 +70,7 @@ public class Comparitizer extends JPanel {
 	 private JTextArea m_FileInfo;
 	 private JPanel m_LeftPanel;
 	 private JPanel m_FileInfoPanel;
+	 private String file_info;
 	/**
 	 * Create the panel.
 	 */
@@ -93,11 +95,13 @@ public class Comparitizer extends JPanel {
 	    m_OutText.setEditable(false);
 	    m_OutText.setFont(new Font("Monospaced", Font.PLAIN, 12));
 	    //m_OutText.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	    
+	    //if the preview windo is right clicked, all the text is selected
 	    m_OutText.addMouseListener(new MouseAdapter() {
 	      @Override
 	      public void mouseClicked(MouseEvent e) {
 	        if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != InputEvent.BUTTON1_MASK) {
-	          m_OutText.selectAll();
+	        	m_OutText.selectAll();
 	        }
 	      }
 	    });
@@ -134,6 +138,20 @@ public class Comparitizer extends JPanel {
 	    m_LeftPanel.add(m_History);
 	    m_History.setBorder(BorderFactory
 	    	      .createTitledBorder("Result list (right-click for options)"));
+	    m_History.setHandleRightClicks(false);
+	    //mouse listener for updating file info
+	    m_History.getList().addMouseListener(new MouseAdapter() {
+		      @Override
+		      public void mouseClicked(MouseEvent e) {
+		        if ((e.getModifiers() & InputEvent.BUTTON2_MASK) != InputEvent.BUTTON2_MASK) {
+		        	set_file_info(m_History.getSelectedBuffer().toString());
+		        }
+		        if (e.getClickCount() == 2) {
+		            m_History.openFrame(m_History.getSelectedName());
+		        }
+		      }
+		    });
+	    
 	    js.getViewport().addChangeListener(new ChangeListener() {
 	      private int lastHeight;
 
@@ -293,8 +311,10 @@ public class Comparitizer extends JPanel {
 	         outBuff.append("\nTraining data unknown\n");
 	       }
 
+	       //set file info string to the buffer 
+	       file_info = outBuff.toString();
 		    //displays the file info in the test label as well
-	       m_FileInfo.setText(outBuff.toString());
+	       m_FileInfo.setText(file_info);
 	       
 	       outBuff.append("\n=== Clustering model ===\n\n");
 	       outBuff.append(clusterer.toString() + "\n");
@@ -326,6 +346,16 @@ public class Comparitizer extends JPanel {
 	     }
 	   }
 	 }
+	 
+	public void set_file_info(String msg){
+		if(m_FileInfo != null){
+			//get the stop index
+			int index = msg.indexOf("=== Clustering model ===");
+			String shortened = msg.substring(0, index);
+			m_FileInfo.setText(shortened);
+		}
+	}
+	
 	public static void main(String[] args) {
 		JFrame m_ComparFrame = new JFrame("Comparitizer test");
 		  System.out.println("Comparitizor!!!!");

@@ -71,6 +71,7 @@ public class Comparitizer extends JPanel {
 	 private JPanel m_LeftPanel;
 	 private JPanel m_FileInfoPanel;
 	 private String file_info;
+	 private FileNameExtensionFilter filter = new FileNameExtensionFilter("Cluster Model", "model");
 	/**
 	 * Create the panel.
 	 */
@@ -225,7 +226,8 @@ public class Comparitizer extends JPanel {
 	  * Loads a clusterer
 	  */
 	 protected void loadClusterer() {
-
+         //change this based on what we are loading
+	   m_FileChooser.setFileFilter(filter);
 	   int returnVal = m_FileChooser.showOpenDialog(this);
 	   if (returnVal == JFileChooser.APPROVE_OPTION) {
 	     File selected = m_FileChooser.getSelectedFile();

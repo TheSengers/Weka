@@ -1,4 +1,4 @@
-package weka.clusterers;
+package weka.comparitizer;
 import java.util.ArrayList;
 
 import weka.core.Instance;
@@ -25,7 +25,7 @@ public class ClusterHomogeneity {
 		  return distance;
 	  }
 	  
-	  static double calculateHomogeneityUsingEuclidean(ArrayList<Instance> inst)
+	  public static double calculateHomogeneityUsingEuclidean(ArrayList<Instance> inst)
 	  {
 		  int numOfInstance = inst.size();
 		  double total = 0;
@@ -38,7 +38,7 @@ public class ClusterHomogeneity {
 		  return total / (numOfInstance* (numOfInstance - 1));
 	  }
 	  
-	  static double calculateHomogeneityUsingManhattan(ArrayList<Instance> inst)
+	  public static double calculateHomogeneityUsingManhattan(ArrayList<Instance> inst)
 	  {
 		  int numOfInstance = inst.size();
 		  double total = 0;
@@ -51,7 +51,7 @@ public class ClusterHomogeneity {
 		  return total / (numOfInstance* (numOfInstance - 1));
 	  }
 	  
-	  static double calculateHomogeneityWithRespectToCentroidUsingEuclidean(ArrayList<Instance> inst, Instance centroid)
+	  public static double calculateHomogeneityWithRespectToCentroidUsingEuclidean(ArrayList<Instance> inst, Instance centroid)
 	  {
 		  int numOfInstance = inst.size();
 		  double total = 0;
@@ -62,7 +62,7 @@ public class ClusterHomogeneity {
 		  return total / numOfInstance;
 	  }
 	  
-	  static double calculateHomogeneityWithRespectToCentroidUsingManhattan(ArrayList<Instance> inst, Instance centroid)
+	  public static double calculateHomogeneityWithRespectToCentroidUsingManhattan(ArrayList<Instance> inst, Instance centroid)
 	  {
 		  int numOfInstance = inst.size();
 		  double total = 0;

@@ -183,6 +183,11 @@ public class Comparitizer extends JPanel {
 		set_up_menubar();
 
 	}
+    
+    /*
+     * Sets up the menu bar at the top for features like load file
+     * The load functionality is based on the current tab
+     */
 	protected void set_up_menubar(){
 		if(comparitizFrame != null){
 			menuBar = new JMenuBar();
@@ -196,17 +201,6 @@ public class Comparitizer extends JPanel {
 			menuLoad.addActionListener(new ActionListener() {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
-		           /* JFileChooser chooser = new JFileChooser();
-		            //change this based on what we are loading
-		            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-		                "JPG & GIF Images", "jpg", "gif");
-		            
-		            chooser.setFileFilter(filter);
-		            int returnVal = chooser.showOpenDialog(getParent());
-		            if(returnVal == JFileChooser.APPROVE_OPTION) {
-		               System.out.println("You chose to open this file: " +
-		                    chooser.getSelectedFile().getName());
-		            }*/
 		        	switch(comparType.getSelectedIndex()){
 		        	case 0:	//current tab is clustering
 		        		loadClusterer();
@@ -223,7 +217,7 @@ public class Comparitizer extends JPanel {
 	}
 	
 	 /**
-	  * Loads a clusterer
+	  * Loads a clusterer. Reused from Weka's explorer load function.
 	  */
 	 protected void loadClusterer() {
          //change this based on what we are loading
@@ -349,6 +343,7 @@ public class Comparitizer extends JPanel {
 	   }
 	 }
 	 
+    // sets the text for the file info text area
 	public void set_file_info(String msg){
 		if(m_FileInfo != null){
 			//get the stop index
@@ -365,9 +360,6 @@ public class Comparitizer extends JPanel {
 		    	m_ComparFrame.getContentPane().setLayout(new BorderLayout());
 		    	m_ComparFrame.getContentPane().add(new Comparitizer());
 		    	m_ComparFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		    	//JLabel textLabel = new JLabel("I'm a label in the window",SwingConstants.CENTER);
-		    	//textLabel.setPreferredSize(new Dimension(300, 100));
-		    	//m_ComparFrame.getContentPane().add(textLabel, BorderLayout.CENTER);
 		    	m_ComparFrame.setLocationRelativeTo(null);
 		    	m_ComparFrame.pack();
 		    	m_ComparFrame.setSize(800,600);
